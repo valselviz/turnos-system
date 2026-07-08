@@ -1,0 +1,111 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f4f5f7;
+  color: #1f2430;
+}
+
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+header h1 {
+  font-size: 1.4rem;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.turno-form, .turno-list {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.turno-form label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.turno-form input, .turno-form select {
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  margin-top: 4px;
+}
+
+.turno-form button, .turno-list button {
+  cursor: pointer;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #2563eb;
+  color: white;
+  border: none;
+}
+
+.turno-form button:disabled, .turno-list button:disabled {
+  background: #a8b0c0;
+  cursor: not-allowed;
+}
+
+.turno-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+
+.actions button {
+  margin-right: 6px;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: white;
+}
+
+.badge-pendiente { background: #d97706; }
+.badge-confirmado { background: #16a34a; }
+.badge-cancelado { background: #dc2626; }
+
+.error {
+  color: #dc2626;
+  font-size: 0.85rem;
+}
+
+.global-error {
+  background: #fee2e2;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+@media (max-width: 700px) {
+  main {
+    grid-template-columns: 1fr;
+  }
+}

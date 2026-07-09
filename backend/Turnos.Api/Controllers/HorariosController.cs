@@ -25,20 +25,26 @@ public class HorariosController : ControllerBase
         _horarios = horarios;
     }
 
-    // GET /horarios-disponibles?fecha=2026-08-01
+    // GET /horarios-disponibles?fecha=2026-08-01&tipoTramite=Pasaporte
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<HorarioDisponibleDto>>> Listar([FromQuery] DateOnly fecha)
+    public async Task<ActionResult<IEnumerable<HorarioDisponibleDto>>> Listar(
+        [FromQuery] DateOnly fecha,
+        [FromQuery] string tipoTramite)
     {
         var slots = _horarios.ObtenerSlotsDelDia(fecha);
 
         var inicioDia = fecha.ToDateTime(TimeOnly.MinValue);
         var finDia = inicioDia.AddDays(1);
 
-        // Solo nos importan los turnos Confirmados: un Pendiente no bloquea
-        // que se muestre el slot como disponible (misma regla que ya usamos
-        // al crear y al confirmar turnos).
+        // Solo nos importan los turnos Confirmados del MISMO trámite: un
+        // Pendiente no bloquea que se muestre el slot como disponible (misma
+        // regla que ya usamos al crear y al confirmar turnos), y un trámite
+        // distinto tampoco — lo atiende otra ventanilla.
         var horasConfirmadas = await _db.Turnos
-            .Where(t => t.FechaHora >= inicioDia && t.FechaHora < finDia && t.Estado == EstadoTurno.Confirmado)
+            .Where(t => t.FechaHora >= inicioDia
+                     && t.FechaHora < finDia
+                     && t.TipoTramite == tipoTramite
+                     && t.Estado == EstadoTurno.Confirmado)
             .Select(t => t.FechaHora)
             .ToListAsync();
 

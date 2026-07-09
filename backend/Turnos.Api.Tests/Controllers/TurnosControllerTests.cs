@@ -45,12 +45,12 @@ public class TurnosControllerTests
         return new DateTime(jueves.Year, jueves.Month, jueves.Day, hora, minuto, 0);
     }
 
-    private static CrearTurnoDto DtoValido(DateTime fechaHora) => new()
+    private static CrearTurnoDto DtoValido(DateTime fechaHora, string tipoTramite = "Pasaporte") => new()
     {
         NombreCiudadano = "Valeria Selviz",
         Dni = "12345678",
         FechaHora = fechaHora,
-        TipoTramite = "Pasaporte",
+        TipoTramite = tipoTramite,
     };
 
     private static TurnoResponseDto ExtraerCreado(ActionResult<TurnoResponseDto> resultado)
@@ -103,6 +103,22 @@ public class TurnosControllerTests
         var resultado = await controller.Crear(DtoValido(fechaHora));
 
         Assert.IsType<ConflictObjectResult>(resultado.Result);
+    }
+
+    [Fact]
+    public async Task Crear_MismoHorarioDistintoTramite_NoGeneraConflicto()
+    {
+        // Pasaporte y Cédula son ventanillas distintas: un Pasaporte confirmado
+        // a las 10am no debería impedir agendar una Cédula a esa misma hora.
+        var controller = CrearController();
+        var fechaHora = ProximoJuevesA(10, 15);
+
+        var pasaporte = ExtraerCreado(await controller.Crear(DtoValido(fechaHora, "Pasaporte")));
+        await controller.Confirmar(pasaporte.Id);
+
+        var resultado = await controller.Crear(DtoValido(fechaHora, "Cédula de identidad"));
+
+        Assert.IsType<CreatedAtActionResult>(resultado.Result);
     }
 
     [Fact]

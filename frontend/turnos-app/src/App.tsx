@@ -1,54 +1,43 @@
-import { useCallback, useEffect, useState } from 'react'
-import { listarTurnos } from './api'
-import TurnoForm from './components/TurnoForm'
-import TurnoList from './components/TurnoList'
-import type { Turno } from './types'
+import { useState } from 'react'
+import VistaCiudadana from './components/VistaCiudadana'
+import VistaAdmin from './components/VistaAdmin'
+import EscudoIcono from './components/EscudoIcono'
+
+type Vista = 'ciudadano' | 'admin'
 
 export default function App() {
-  const [turnos, setTurnos] = useState<Turno[]>([])
-  const [filtroEstado, setFiltroEstado] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  const cargarTurnos = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await listarTurnos({ estado: filtroEstado || undefined })
-      setTurnos(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido')
-    } finally {
-      setLoading(false)
-    }
-  }, [filtroEstado])
-
-  useEffect(() => {
-    cargarTurnos()
-  }, [cargarTurnos])
+  const [vista, setVista] = useState<Vista>('ciudadano')
 
   return (
     <div className="app">
-      <header>
-        <h1>Sistema de Turnos — Dirección Nacional de Migraciones</h1>
+      <header className="site-header">
+        <div className="site-header-inner">
+          <div className="site-header-brand">
+            <EscudoIcono />
+            <div>
+              <p className="site-eyebrow">Ministerio del Interior · Dirección Nacional de Migraciones</p>
+              <h1>Sistema de Turnos</h1>
+            </div>
+          </div>
+
+          <div className="site-header-actions">
+            <button
+              type="button"
+              className="link-button"
+              onClick={() => setVista(vista === 'ciudadano' ? 'admin' : 'ciudadano')}
+            >
+              {vista === 'ciudadano' ? 'Vista administrador' : 'Volver a vista ciudadano'}
+            </button>
+            <span className="gub-badge">gub.uy</span>
+          </div>
+        </div>
       </header>
 
-      {error && <p className="error global-error">{error}</p>}
-
-      <main>
-        <TurnoForm onCreated={cargarTurnos} />
-        {loading ? (
-          <p>Cargando turnos...</p>
-        ) : (
-          <TurnoList
-            turnos={turnos}
-            filtroEstado={filtroEstado}
-            onFiltroChange={setFiltroEstado}
-            onChanged={cargarTurnos}
-            onError={setError}
-          />
-        )}
-      </main>
+      <div className="page-content">
+        <main>
+          {vista === 'ciudadano' ? <VistaCiudadana /> : <VistaAdmin />}
+        </main>
+      </div>
     </div>
   )
 }

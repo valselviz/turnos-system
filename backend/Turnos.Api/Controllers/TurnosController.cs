@@ -71,11 +71,14 @@ public class TurnosController : ControllerBase
                 "El horario elegido no corresponde a un turno habilitado."));
         }
 
-        // Regla: si ese slot ya tiene un turno Confirmado, ni siquiera dejamos
-        // crear un Pendiente nuevo ahí (evita que alguien agende algo que ya
-        // sabemos que va a fallar al intentar confirmarlo).
+        // Regla: si ese slot ya tiene un turno Confirmado del MISMO trámite, ni
+        // siquiera dejamos crear un Pendiente nuevo ahí (evita que alguien agende
+        // algo que ya sabemos que va a fallar al intentar confirmarlo). Distintos
+        // trámites no compiten por el mismo horario — los atiende otra ventanilla.
         var slotYaConfirmado = await _db.Turnos.AnyAsync(t =>
-            t.FechaHora == dto.FechaHora && t.Estado == EstadoTurno.Confirmado);
+            t.FechaHora == dto.FechaHora &&
+            t.TipoTramite == dto.TipoTramite &&
+            t.Estado == EstadoTurno.Confirmado);
 
         if (slotYaConfirmado)
         {
@@ -114,10 +117,12 @@ public class TurnosController : ControllerBase
                 $"Sólo se pueden confirmar turnos en estado 'Pendiente'. Estado actual: '{turno.Estado}'."));
         }
 
-        // Regla: no puede existir más de un turno confirmado en el mismo horario.
+        // Regla: no puede existir más de un turno confirmado en el mismo horario
+        // para el mismo trámite (distintos trámites usan ventanillas distintas).
         var existeConflicto = await _db.Turnos.AnyAsync(t =>
             t.Id != id &&
             t.FechaHora == turno.FechaHora &&
+            t.TipoTramite == turno.TipoTramite &&
             t.Estado == EstadoTurno.Confirmado);
 
         if (existeConflicto)

@@ -45,8 +45,8 @@ export function crearTurno(turno: CrearTurnoInput): Promise<Turno> {
   })
 }
 
-export function listarHorariosDisponibles(fecha: string): Promise<HorarioDisponible[]> {
-  const params = new URLSearchParams({ fecha })
+export function listarHorariosDisponibles(fecha: string, tipoTramite: string): Promise<HorarioDisponible[]> {
+  const params = new URLSearchParams({ fecha, tipoTramite })
   return request<HorarioDisponible[]>(`/horarios-disponibles?${params.toString()}`)
 }
 

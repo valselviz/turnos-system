@@ -35,10 +35,15 @@ public class TurnosDbContext : DbContext
             // mismo horario" reforzada a nivel de base de datos con un índice único
             // parcial: solo aplica a filas cuyo Estado sea 'Confirmado'. Esto evita
             // condiciones de carrera que la validación en el controller sola no cubre.
-            entity.HasIndex(t => t.FechaHora)
+            //
+            // El índice es compuesto (FechaHora + TipoTramite) y no solo FechaHora:
+            // distintos trámites los atiende una ventanilla distinta dentro de la
+            // oficina, así que un Pasaporte confirmado a las 9am no tiene por qué
+            // bloquear una Cédula a esa misma hora.
+            entity.HasIndex(t => new { t.FechaHora, t.TipoTramite })
                   .IsUnique()
                   .HasFilter("\"Estado\" = 'Confirmado'")
-                  .HasDatabaseName("IX_Turnos_FechaHora_SoloConfirmados");
+                  .HasDatabaseName("IX_Turnos_FechaHora_TipoTramite_SoloConfirmados");
         });
     }
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { crearTurno, listarHorariosDisponibles } from '../api'
-import type { CrearTurnoInput, HorarioDisponible } from '../types'
+import type { CrearTurnoInput, HorarioDisponible, Turno } from '../types'
 
 const TIPOS_TRAMITE = [
   'Pasaporte',
@@ -11,7 +11,7 @@ const TIPOS_TRAMITE = [
 ] as const
 
 interface TurnoFormProps {
-  onCreated: () => void
+  onCreated: (turno: Turno) => void
 }
 
 function hoyISO(): string {
@@ -46,8 +46,9 @@ export default function TurnoForm({ onCreated }: TurnoFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // Cada vez que cambia la fecha, pedimos la grilla de slots de ese día.
-  // Elegir una fecha nueva invalida el horario que tuvieras seleccionado.
+  // La disponibilidad depende de la fecha Y del trámite (cada trámite tiene
+  // su propia ventanilla) — recalculamos cada vez que cambia cualquiera de
+  // los dos, e invalidamos el horario elegido previamente.
   useEffect(() => {
     if (!fecha) {
       setHorarios([])
@@ -58,7 +59,7 @@ export default function TurnoForm({ onCreated }: TurnoFormProps) {
     setCargandoHorarios(true)
     setHoraSeleccionada('')
 
-    listarHorariosDisponibles(fecha)
+    listarHorariosDisponibles(fecha, tipoTramite)
       .then((data) => {
         if (!cancelado) setHorarios(data)
       })
@@ -72,7 +73,7 @@ export default function TurnoForm({ onCreated }: TurnoFormProps) {
     return () => {
       cancelado = true
     }
-  }, [fecha])
+  }, [fecha, tipoTramite])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -95,14 +96,14 @@ export default function TurnoForm({ onCreated }: TurnoFormProps) {
         fechaHora: formatearFechaHoraNaive(anio, mes, dia, Number(horaStr), Number(minutoStr)),
       }
 
-      await crearTurno(payload)
+      const turno = await crearTurno(payload)
 
       setNombreCiudadano('')
       setDni('')
       setTipoTramite(TIPOS_TRAMITE[0])
       setFecha('')
       setHoraSeleccionada('')
-      onCreated()
+      onCreated(turno)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido')
     } finally {
@@ -159,16 +160,22 @@ export default function TurnoForm({ onCreated }: TurnoFormProps) {
           <option value="" disabled>
             {!fecha ? 'Elegí una fecha primero' : cargandoHorarios ? 'Cargando...' : 'Elegí un horario'}
           </option>
-          {horarios.map((h) => (
-            <option key={h.horaInicio} value={h.horaInicio} disabled={!h.disponible}>
-              {formatearHora(h.horaInicio)}{!h.disponible ? ' (ocupado)' : ''}
-            </option>
-          ))}
+          {horarios
+            .filter((h) => h.disponible)
+            .map((h) => (
+              <option key={h.horaInicio} value={h.horaInicio}>
+                {formatearHora(h.horaInicio)}
+              </option>
+            ))}
         </select>
       </label>
 
       {fecha && !cargandoHorarios && horarios.length === 0 && (
         <p className="error">No hay turnos habilitados ese día (solo de lunes a viernes).</p>
+      )}
+
+      {fecha && !cargandoHorarios && horarios.length > 0 && horarios.every((h) => !h.disponible) && (
+        <p className="error">No quedan horarios libres ese día. Probá con otra fecha.</p>
       )}
 
       {error && <p className="error">{error}</p>}

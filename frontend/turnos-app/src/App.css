@@ -1,34 +1,123 @@
+:root {
+  --azul-gobierno: #0a3d62;
+  --azul-oscuro: #06283d;
+  --dorado: #f2b705;
+  --gris-fondo: #f4f5f7;
+  --texto: #1f2430;
+}
+
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
-  background: #f4f5f7;
-  color: #1f2430;
+  background: var(--gris-fondo);
+  color: var(--texto);
 }
 
-.app {
+/* Header: a todo el ancho, con un contenedor interno centrado (el mismo
+   patrón que usan los sitios .gub.uy: barra de color edge-to-edge, contenido
+   alineado a una columna central). */
+.site-header {
+  background: var(--azul-gobierno);
+  color: white;
+}
+
+.site-header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.site-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.site-eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #cfe0ee;
+}
+
+.site-header-brand h1 {
+  margin: 2px 0 0;
+  font-size: 1.3rem;
+  color: white;
+}
+
+.site-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.gub-badge {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: white;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.page-content {
   max-width: 960px;
   margin: 0 auto;
   padding: 24px;
 }
 
-header h1 {
-  font-size: 1.4rem;
-}
-
-main {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-.turno-form, .turno-list {
+.turno-form, .turno-list, .turno-confirmacion {
   background: white;
   border-radius: 8px;
-  padding: 16px;
+  padding: 20px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-top: 3px solid var(--dorado);
+}
+
+.turno-form, .turno-confirmacion {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.turno-form h2, .turno-list h2, .turno-confirmacion h2 {
+  color: var(--azul-gobierno);
+  margin-top: 0;
+}
+
+.turno-confirmacion dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 16px 0;
+}
+
+.turno-confirmacion dt {
+  font-weight: 600;
+  color: #555;
+}
+
+.turno-confirmacion dd {
+  margin: 0;
 }
 
 .turno-form label {
@@ -42,16 +131,29 @@ main {
   width: 100%;
   padding: 6px 8px;
   margin-top: 4px;
+  border: 1px solid #c7d0da;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.95rem;
 }
 
-.turno-form button, .turno-list button {
+.turno-form input:focus, .turno-form select:focus {
+  outline: 2px solid var(--azul-gobierno);
+  outline-offset: 1px;
+}
+
+.turno-form button, .turno-list button, .turno-confirmacion button {
   cursor: pointer;
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #2563eb;
-  color: white;
+  padding: 8px 14px;
   border: none;
+  border-radius: 4px;
+  background: var(--azul-gobierno);
+  color: white;
+  font-size: 0.9rem;
+}
+
+.turno-form button:hover, .turno-list button:hover, .turno-confirmacion button:hover {
+  background: var(--azul-oscuro);
 }
 
 .turno-form button:disabled, .turno-list button:disabled {
@@ -71,7 +173,17 @@ table {
   margin-top: 12px;
 }
 
-th, td {
+th {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 2px solid var(--azul-gobierno);
+  font-size: 0.85rem;
+  color: var(--azul-gobierno);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+td {
   text-align: left;
   padding: 8px;
   border-bottom: 1px solid #eee;
@@ -105,7 +217,8 @@ th, td {
 }
 
 @media (max-width: 700px) {
-  main {
-    grid-template-columns: 1fr;
+  .site-header-inner {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

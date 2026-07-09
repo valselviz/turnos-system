@@ -15,6 +15,7 @@ turnos-system/
 1. **No puede existir más de un turno confirmado en el mismo horario.** Se valida en `PUT /turnos/{id}/confirmar` antes de guardar, y además hay un índice único parcial en la base de datos (`IX_Turnos_FechaHora_SoloConfirmados`, sólo sobre filas con `Estado = 'Confirmado'`) como red de seguridad ante condiciones de carrera.
 2. **Un turno sólo puede cancelarse si su estado es pendiente o confirmado.** `PUT /turnos/{id}/cancelar` rechaza con 400 si ya está cancelado.
 3. **La fecha/hora debe ser futura al crear el turno.** `POST /turnos` valida `fechaHora > DateTime.Now` y rechaza con 400 si no lo es.
+4. **El turno debe caer en un horario habilitado.** Solo se pueden agendar turnos de lunes a viernes, de 09:00 a 16:00, en slots fijos de 15 minutos (configurable en `appsettings.json`, sección `HorarioLaboral`). Además, si el slot elegido ya tiene un turno Confirmado, se rechaza la creación con 409 (no tiene sentido dejar crear un Pendiente que ya sabemos que no se va a poder confirmar). Ver `Services/HorarioService.cs`.
 
 ## Requisitos
 
@@ -36,7 +37,7 @@ La connection string por defecto (en `backend/Turnos.Api/appsettings.json`) es:
 Host=localhost;Port=5432;Database=turnos_db;Username=postgres;Password=postgres
 ```
 
-Si tu Postgres local usa otro usuario/contraseña, editá `appsettings.Development.json` (no versionado si lo agregás a `.gitignore`, o usá `dotnet user-secrets`) con tu propia `ConnectionStrings:TurnosDb`.
+Ojo: en Postgres instalado vía Homebrew en Mac no existe el rol `postgres` por defecto — el superusuario se llama igual que tu usuario del sistema operativo, y no requiere contraseña (autenticación `trust` local). Si es tu caso, ajustá `Username` a tu usuario de macOS y sacá `Password` de la connection string. Si tu Postgres usa otro usuario/contraseña (por ejemplo, corriendo en Docker), editá `appsettings.Development.json` (no versionado si lo agregás a `.gitignore`, o usá `dotnet user-secrets`) con tu propia `ConnectionStrings:TurnosDb`.
 
 ## 2. Backend
 
@@ -61,6 +62,7 @@ Hay un `global.json` en la raíz del repo que fija el SDK a 8.0.x, por si tenés
 | GET | `/turnos` | Lista turnos. Filtros opcionales: `?estado=Pendiente` y/o `?fecha=2026-08-01` |
 | PUT | `/turnos/{id}/confirmar` | Confirma un turno pendiente |
 | PUT | `/turnos/{id}/cancelar` | Cancela un turno pendiente o confirmado |
+| GET | `/horarios-disponibles?fecha=2026-08-01` | Lista los slots del día (lunes a viernes, 09:00-16:00, cada 15 min) marcando cuáles ya tienen un turno Confirmado |
 
 ## 3. Frontend
 

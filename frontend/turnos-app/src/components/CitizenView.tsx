@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import AppointmentForm from './AppointmentForm'
 import { SERVICES } from '../services'
-import { formatDate, formatTime, formatNationalId } from '../format'
+import { formatDate, formatTime, formatNationalId, formatStatus } from '../format'
 import type { Appointment } from '../types'
 
 type Step =
@@ -37,7 +37,7 @@ export default function CitizenView() {
           <dt>Hora</dt>
           <dd>{formatTime(appointment.scheduledAt)}</dd>
           <dt>Estado</dt>
-          <dd>{appointment.status}</dd>
+          <dd>{formatStatus(appointment.status)}</dd>
         </dl>
         <button onClick={() => setStep({ type: 'menu' })}>Agendar otro turno</button>
       </div>

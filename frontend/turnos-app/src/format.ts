@@ -18,6 +18,19 @@ export function formatTime(scheduledAtIso: string): string {
   return `${hh}:${mm}`
 }
 
+// Backend status values are in English (Pending/Confirmed/Cancelled — see
+// AppointmentStatus in the backend); this is the single place that maps them
+// to the Spanish label shown in the UI.
+const STATUS_LABELS: Record<string, string> = {
+  Pending: 'Pendiente',
+  Confirmed: 'Confirmado',
+  Cancelled: 'Cancelado',
+}
+
+export function formatStatus(status: string): string {
+  return STATUS_LABELS[status] ?? status
+}
+
 // We store the national ID as digits with no dots or dash (simpler to
 // validate), and format it only when displaying: x.xxx.xxx-x, with the last
 // digit as a check digit. Works with 7 or 8 digits (doesn't assume a fixed length).

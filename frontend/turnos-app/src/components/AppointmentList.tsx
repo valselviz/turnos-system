@@ -1,13 +1,7 @@
 import { confirmAppointment, cancelAppointment } from '../api'
-import { formatDate, formatTime, formatNationalId } from '../format'
+import { formatDate, formatTime, formatNationalId, formatStatus } from '../format'
 import { SERVICE_TYPES } from '../services'
-import type { Appointment, AppointmentStatus } from '../types'
-
-const STATUS_LABEL: Record<AppointmentStatus, string> = {
-  Pending: 'Pendiente',
-  Confirmed: 'Confirmado',
-  Cancelled: 'Cancelado',
-}
+import type { Appointment } from '../types'
 
 interface AppointmentListProps {
   appointments: Appointment[]
@@ -108,7 +102,7 @@ export default function AppointmentList({
                 <td data-label="Trámite">{a.serviceType}</td>
                 <td data-label="Estado">
                   <span className={`badge badge-${a.status.toLowerCase()}`}>
-                    {STATUS_LABEL[a.status] ?? a.status}
+                    {formatStatus(a.status)}
                   </span>
                 </td>
                 <td data-label="Acciones" className="actions">

@@ -5,25 +5,25 @@ using Turnos.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Controllers + Swagger (documentación interactiva en /swagger)
+// Controllers + Swagger (interactive docs at /swagger)
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // EF Core + PostgreSQL
-var connectionString = builder.Configuration.GetConnectionString("TurnosDb")
-    ?? throw new InvalidOperationException("Falta la connection string 'TurnosDb' en appsettings.json.");
+var connectionString = builder.Configuration.GetConnectionString("AppointmentsDb")
+    ?? throw new InvalidOperationException("Missing 'AppointmentsDb' connection string in appsettings.json.");
 
-builder.Services.AddDbContext<TurnosDbContext>(options =>
+builder.Services.AddDbContext<AppointmentsDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Configuración del horario laboral (ver Options/HorarioLaboralOptions.cs)
-builder.Services.Configure<HorarioLaboralOptions>(
-    builder.Configuration.GetSection(HorarioLaboralOptions.SectionName));
+// Business hours configuration (see Options/BusinessHoursOptions.cs)
+builder.Services.Configure<BusinessHoursOptions>(
+    builder.Configuration.GetSection(BusinessHoursOptions.SectionName));
 
-builder.Services.AddSingleton<IHorarioService, HorarioService>();
+builder.Services.AddSingleton<IScheduleService, ScheduleService>();
 
-// CORS: habilitamos el origen del frontend (Vite en localhost:5173 por defecto)
+// CORS: allow the frontend's origin (Vite on localhost:5173 by default)
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
     ?? new[] { "http://localhost:5173" };
 
@@ -49,12 +49,12 @@ app.UseCors("FrontendPolicy");
 app.UseAuthorization();
 app.MapControllers();
 
-// Aplica migraciones pendientes al arrancar. Necesario en Docker, donde no hay
-// una terminal interactiva para correr "dotnet ef database update" a mano.
-// Es seguro correrlo siempre: si no hay migraciones pendientes, no hace nada.
+// Applies pending migrations at startup. Needed in Docker, where there's no
+// interactive terminal to run "dotnet ef database update" by hand. Safe to
+// always run: if there are no pending migrations, it does nothing.
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<TurnosDbContext>();
+    var db = scope.ServiceProvider.GetRequiredService<AppointmentsDbContext>();
     db.Database.Migrate();
 }
 

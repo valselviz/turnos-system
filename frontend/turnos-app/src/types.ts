@@ -1,42 +1,42 @@
-// Estos tipos reflejan exactamente los DTOs del backend
-// (Turnos.Api/Dtos/TurnoDtos.cs). Si un campo cambia en el backend,
-// este archivo es el primer lugar que hay que actualizar.
+// These types mirror the backend DTOs exactly
+// (Turnos.Api/Dtos/AppointmentDtos.cs). If a field changes in the backend,
+// this file is the first place to update.
 
-export type EstadoTurno = 'Pendiente' | 'Confirmado' | 'Cancelado'
+export type AppointmentStatus = 'Pending' | 'Confirmed' | 'Cancelled'
 
-/** Forma en la que la API devuelve un turno (TurnoResponseDto). */
-export interface Turno {
+/** Shape in which the API returns an appointment (AppointmentResponseDto). */
+export interface Appointment {
   id: number
-  nombreCiudadano: string
-  dni: string
-  fechaHora: string // ISO 8601, tal como lo serializa System.Text.Json
-  tipoTramite: string
-  estado: EstadoTurno
+  citizenName: string
+  nationalId: string
+  scheduledAt: string // ISO 8601, as serialized by System.Text.Json
+  serviceType: string
+  status: AppointmentStatus
   createdAt: string
 }
 
-/** Body que espera POST /turnos (CrearTurnoDto). */
-export interface CrearTurnoInput {
-  nombreCiudadano: string
-  dni: string
-  fechaHora: string // ISO 8601
-  tipoTramite: string
+/** Body expected by POST /turnos (CreateAppointmentDto). */
+export interface CreateAppointmentInput {
+  citizenName: string
+  nationalId: string
+  scheduledAt: string // ISO 8601
+  serviceType: string
 }
 
-/** Filtros opcionales que acepta GET /turnos. */
-export interface FiltrosTurnos {
-  estado?: string
-  fecha?: string // YYYY-MM-DD
-  tipoTramite?: string
-  busqueda?: string // nombre o DNI, coincidencia parcial
+/** Optional filters accepted by GET /turnos. */
+export interface AppointmentFilters {
+  status?: string
+  date?: string // YYYY-MM-DD
+  serviceType?: string
+  search?: string // name or national ID, partial match
 }
 
 /**
- * Un slot de la grilla horaria de un día (GET /horarios-disponibles).
- * horaInicio llega como "HH:mm:ss" — así serializa System.Text.Json el
- * TimeOnly del backend (ver HorarioDisponibleDto).
+ * A slot in a day's time grid (GET /available-slots).
+ * startTime arrives as "HH:mm:ss" — that's how System.Text.Json serializes
+ * the backend's TimeOnly (see AvailableSlotDto).
  */
-export interface HorarioDisponible {
-  horaInicio: string
-  disponible: boolean
+export interface AvailableSlot {
+  startTime: string
+  available: boolean
 }

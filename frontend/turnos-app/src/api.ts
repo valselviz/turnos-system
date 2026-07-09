@@ -1,4 +1,4 @@
-import type { Turno, CrearTurnoInput, FiltrosTurnos, HorarioDisponible } from './types'
+import type { Appointment, CreateAppointmentInput, AppointmentFilters, AvailableSlot } from './types'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5080'
 
@@ -12,16 +12,16 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     ...options,
   })
 
-  // La API devuelve { error: "..." } en las respuestas de error (ver
-  // ErrorResponseDto en el backend), así que lo desempaquetamos acá una
-  // sola vez para que los componentes solo necesiten un try/catch simple.
+  // The API returns { error: "..." } on error responses (see ErrorResponseDto
+  // in the backend), so we unwrap it here once so components only need a
+  // simple try/catch.
   if (!res.ok) {
     let message = `Error ${res.status}`
     try {
       const body: ErrorResponse = await res.json()
       if (body?.error) message = body.error
     } catch {
-      // sin body JSON, usamos el mensaje generico
+      // no JSON body, use the generic message
     }
     throw new Error(message)
   }
@@ -30,32 +30,32 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return res.json() as Promise<T>
 }
 
-export function listarTurnos(filtros: FiltrosTurnos = {}): Promise<Turno[]> {
+export function listAppointments(filters: AppointmentFilters = {}): Promise<Appointment[]> {
   const params = new URLSearchParams()
-  if (filtros.estado) params.set('estado', filtros.estado)
-  if (filtros.fecha) params.set('fecha', filtros.fecha)
-  if (filtros.tipoTramite) params.set('tipoTramite', filtros.tipoTramite)
-  if (filtros.busqueda) params.set('busqueda', filtros.busqueda)
+  if (filters.status) params.set('status', filters.status)
+  if (filters.date) params.set('date', filters.date)
+  if (filters.serviceType) params.set('serviceType', filters.serviceType)
+  if (filters.search) params.set('search', filters.search)
   const query = params.toString() ? `?${params.toString()}` : ''
-  return request<Turno[]>(`/turnos${query}`)
+  return request<Appointment[]>(`/turnos${query}`)
 }
 
-export function crearTurno(turno: CrearTurnoInput): Promise<Turno> {
-  return request<Turno>('/turnos', {
+export function createAppointment(appointment: CreateAppointmentInput): Promise<Appointment> {
+  return request<Appointment>('/turnos', {
     method: 'POST',
-    body: JSON.stringify(turno),
+    body: JSON.stringify(appointment),
   })
 }
 
-export function listarHorariosDisponibles(fecha: string, tipoTramite: string): Promise<HorarioDisponible[]> {
-  const params = new URLSearchParams({ fecha, tipoTramite })
-  return request<HorarioDisponible[]>(`/horarios-disponibles?${params.toString()}`)
+export function listAvailableSlots(date: string, serviceType: string): Promise<AvailableSlot[]> {
+  const params = new URLSearchParams({ date, serviceType })
+  return request<AvailableSlot[]>(`/available-slots?${params.toString()}`)
 }
 
-export function confirmarTurno(id: number): Promise<Turno> {
-  return request<Turno>(`/turnos/${id}/confirmar`, { method: 'PUT' })
+export function confirmAppointment(id: number): Promise<Appointment> {
+  return request<Appointment>(`/turnos/${id}/confirmar`, { method: 'PUT' })
 }
 
-export function cancelarTurno(id: number): Promise<Turno> {
-  return request<Turno>(`/turnos/${id}/cancelar`, { method: 'PUT' })
+export function cancelAppointment(id: number): Promise<Appointment> {
+  return request<Appointment>(`/turnos/${id}/cancelar`, { method: 'PUT' })
 }

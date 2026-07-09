@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Turnos.Api.Data;
@@ -11,12 +10,10 @@ using Turnos.Api.Data;
 
 namespace Turnos.Api.Migrations
 {
-    [DbContext(typeof(TurnosDbContext))]
-    [Migration("20260709023928_ExclusividadSlotPorTramite")]
-    partial class ExclusividadSlotPorTramite
+    [DbContext(typeof(AppointmentsDbContext))]
+    partial class AppointmentsDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +22,7 @@ namespace Turnos.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Turnos.Api.Models.Turno", b =>
+            modelBuilder.Entity("Turnos.Api.Models.Appointment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,40 +30,40 @@ namespace Turnos.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Dni")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<DateTime>("FechaHora")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("NombreCiudadano")
+                    b.Property<string>("CitizenName")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<string>("TipoTramite")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NationalId")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("ScheduledAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ServiceType")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("FechaHora", "TipoTramite")
+                    b.HasIndex("ScheduledAt", "ServiceType")
                         .IsUnique()
-                        .HasDatabaseName("IX_Turnos_FechaHora_TipoTramite_SoloConfirmados")
-                        .HasFilter("\"Estado\" = 'Confirmado'");
+                        .HasDatabaseName("IX_Appointments_ScheduledAt_ServiceType_ConfirmedOnly")
+                        .HasFilter("\"Status\" = 'Confirmed'");
 
-                    b.ToTable("Turnos");
+                    b.ToTable("Appointments");
                 });
 #pragma warning restore 612, 618
         }

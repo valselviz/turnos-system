@@ -1,19 +1,19 @@
 import { useState } from 'react'
-import VistaCiudadana from './components/VistaCiudadana'
-import VistaAdmin from './components/VistaAdmin'
-import EscudoIcono from './components/EscudoIcono'
+import CitizenView from './components/CitizenView'
+import AdminView from './components/AdminView'
+import ShieldIcon from './components/ShieldIcon'
 
-type Vista = 'ciudadano' | 'admin'
+type View = 'citizen' | 'admin'
 
 export default function App() {
-  const [vista, setVista] = useState<Vista>('ciudadano')
+  const [view, setView] = useState<View>('citizen')
 
   return (
     <div className="app">
       <header className="site-header">
         <div className="site-header-inner">
           <div className="site-header-brand">
-            <EscudoIcono />
+            <ShieldIcon />
             <div>
               <p className="site-eyebrow">Ministerio del Interior · Dirección Nacional de Migraciones</p>
               <h1>Sistema de Turnos</h1>
@@ -24,9 +24,9 @@ export default function App() {
             <button
               type="button"
               className="link-button"
-              onClick={() => setVista(vista === 'ciudadano' ? 'admin' : 'ciudadano')}
+              onClick={() => setView(view === 'citizen' ? 'admin' : 'citizen')}
             >
-              {vista === 'ciudadano' ? 'Vista administrador' : 'Volver a vista ciudadano'}
+              {view === 'citizen' ? 'Vista administrador' : 'Volver a vista ciudadano'}
             </button>
             <span className="gub-badge">gub.uy</span>
           </div>
@@ -35,7 +35,7 @@ export default function App() {
 
       <div className="page-content">
         <main>
-          {vista === 'ciudadano' ? <VistaCiudadana /> : <VistaAdmin />}
+          {view === 'citizen' ? <CitizenView /> : <AdminView />}
         </main>
       </div>
     </div>

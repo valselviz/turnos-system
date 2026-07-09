@@ -12,10 +12,10 @@ turnos-system/
 
 ## Reglas de negocio implementadas
 
-1. **No puede existir más de un turno confirmado en el mismo horario para el mismo trámite.** Se valida en `PUT /turnos/{id}/confirmar` antes de guardar, y además hay un índice único compuesto y parcial en la base de datos (`IX_Turnos_FechaHora_TipoTramite_SoloConfirmados`, sobre `FechaHora` + `TipoTramite`, sólo en filas con `Estado = 'Confirmado'`) como red de seguridad ante condiciones de carrera. Es compuesto y no solo por horario porque distintos trámites los atiende una ventanilla distinta — un Pasaporte confirmado a las 9am no bloquea una Cédula a esa misma hora.
+1. **No puede existir más de un turno confirmado en el mismo horario para el mismo trámite.** Se valida en `PUT /turnos/{id}/confirmar` antes de guardar, y además hay un índice único compuesto y parcial en la base de datos (`IX_Appointments_ScheduledAt_ServiceType_ConfirmedOnly`, sobre `ScheduledAt` + `ServiceType`, sólo en filas con `Status = 'Confirmed'`) como red de seguridad ante condiciones de carrera. Es compuesto y no solo por horario porque distintos trámites los atiende una ventanilla distinta — un Pasaporte confirmado a las 9am no bloquea una Cédula a esa misma hora.
 2. **Un turno sólo puede cancelarse si su estado es pendiente o confirmado.** `PUT /turnos/{id}/cancelar` rechaza con 400 si ya está cancelado.
-3. **La fecha/hora debe ser futura al crear el turno.** `POST /turnos` valida `fechaHora > DateTime.Now` y rechaza con 400 si no lo es.
-4. **El turno debe caer en un horario habilitado.** Solo se pueden agendar turnos de lunes a viernes, de 09:00 a 16:00, en slots fijos de 15 minutos (configurable en `appsettings.json`, sección `HorarioLaboral`). Además, si el slot elegido ya tiene un turno Confirmado del mismo trámite, se rechaza la creación con 409 (no tiene sentido dejar crear un Pendiente que ya sabemos que no se va a poder confirmar). Ver `Services/HorarioService.cs`.
+3. **La fecha/hora debe ser futura al crear el turno.** `POST /turnos` valida `scheduledAt > DateTime.Now` y rechaza con 400 si no lo es.
+4. **El turno debe caer en un horario habilitado.** Solo se pueden agendar turnos de lunes a viernes, de 09:00 a 16:00, en slots fijos de 15 minutos (configurable en `appsettings.json`, sección `BusinessHours`). Además, si el slot elegido ya tiene un turno Confirmado del mismo trámite, se rechaza la creación con 409 (no tiene sentido dejar crear un Pendiente que ya sabemos que no se va a poder confirmar). Ver `Services/ScheduleService.cs`.
 
 ## Requisitos
 
@@ -37,7 +37,7 @@ La connection string por defecto (en `backend/Turnos.Api/appsettings.json`) es:
 Host=localhost;Port=5432;Database=turnos_db;Username=postgres;Password=postgres
 ```
 
-Ojo: en Postgres instalado vía Homebrew en Mac no existe el rol `postgres` por defecto — el superusuario se llama igual que tu usuario del sistema operativo, y no requiere contraseña (autenticación `trust` local). Si es tu caso, ajustá `Username` a tu usuario de macOS y sacá `Password` de la connection string. Si tu Postgres usa otro usuario/contraseña (por ejemplo, corriendo en Docker), editá `appsettings.Development.json` (no versionado si lo agregás a `.gitignore`, o usá `dotnet user-secrets`) con tu propia `ConnectionStrings:TurnosDb`.
+Ojo: en Postgres instalado vía Homebrew en Mac no existe el rol `postgres` por defecto — el superusuario se llama igual que tu usuario del sistema operativo, y no requiere contraseña (autenticación `trust` local). Si es tu caso, ajustá `Username` a tu usuario de macOS y sacá `Password` de la connection string. Si tu Postgres usa otro usuario/contraseña (por ejemplo, corriendo en Docker), editá `appsettings.Development.json` (no versionado si lo agregás a `.gitignore`, o usá `dotnet user-secrets`) con tu propia `ConnectionStrings:AppointmentsDb`.
 
 ## 2. Backend
 
@@ -58,11 +58,11 @@ Hay un `global.json` en la raíz del repo que fija el SDK a 8.0.x, por si tenés
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| POST | `/turnos` | Crea un turno. Body: `nombreCiudadano`, `dni`, `fechaHora`, `tipoTramite` |
-| GET | `/turnos` | Lista turnos. Filtros opcionales: `?estado=Pendiente` y/o `?fecha=2026-08-01` |
+| POST | `/turnos` | Crea un turno. Body: `citizenName`, `nationalId`, `scheduledAt`, `serviceType` |
+| GET | `/turnos` | Lista turnos. Filtros opcionales: `?status=Pending` y/o `?date=2026-08-01`, `?serviceType=`, `?search=` |
 | PUT | `/turnos/{id}/confirmar` | Confirma un turno pendiente |
 | PUT | `/turnos/{id}/cancelar` | Cancela un turno pendiente o confirmado |
-| GET | `/horarios-disponibles?fecha=2026-08-01&tipoTramite=Pasaporte` | Lista los slots del día para ese trámite (lunes a viernes, 09:00-16:00, cada 15 min) marcando cuáles ya tienen un turno Confirmado de ese mismo trámite |
+| GET | `/available-slots?date=2026-08-01&serviceType=Pasaporte` | Lista los slots del día para ese trámite (lunes a viernes, 09:00-16:00, cada 15 min) marcando cuáles ya tienen un turno Confirmado de ese mismo trámite |
 
 ## 3. Frontend
 
@@ -96,7 +96,7 @@ cd backend/Turnos.Api.Tests
 dotnet test
 ```
 
-Cubren las cuatro reglas de negocio: `HorarioServiceTests` prueba la grilla de slots de forma aislada (sin base de datos), y `TurnosControllerTests` prueba los endpoints usando una base de datos en memoria (EF Core InMemory), sin tocar Postgres real.
+Cubren las cuatro reglas de negocio: `ScheduleServiceTests` prueba la grilla de slots de forma aislada (sin base de datos), y `AppointmentsControllerTests` prueba los endpoints usando una base de datos en memoria (EF Core InMemory), sin tocar Postgres real.
 
 ## Notas
 

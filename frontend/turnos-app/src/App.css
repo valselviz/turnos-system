@@ -15,9 +15,9 @@ body {
   color: var(--texto);
 }
 
-/* Header: a todo el ancho, con un contenedor interno centrado (el mismo
-   patrón que usan los sitios .gub.uy: barra de color edge-to-edge, contenido
-   alineado a una columna central). */
+/* Header: full width, with an inner container centered (the same pattern
+   used by .gub.uy sites: edge-to-edge color bar, content aligned to a
+   central column). */
 .site-header {
   background: var(--azul-gobierno);
   color: white;
@@ -86,7 +86,7 @@ body {
   padding: 24px;
 }
 
-.turno-form, .turno-list, .turno-confirmacion {
+.appointment-form, .appointment-list, .appointment-confirmation {
   background: white;
   border-radius: 8px;
   padding: 20px;
@@ -94,39 +94,39 @@ body {
   border: 1px solid var(--gris-borde);
 }
 
-.turno-form, .turno-confirmacion {
+.appointment-form, .appointment-confirmation {
   max-width: 480px;
   margin: 0 auto;
 }
 
-.turno-form h2, .turno-list h2, .turno-confirmacion h2 {
+.appointment-form h2, .appointment-list h2, .appointment-confirmation h2 {
   color: var(--azul-gobierno);
   margin-top: 0;
 }
 
-.turno-confirmacion dl {
+.appointment-confirmation dl {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 4px 12px;
   margin: 16px 0;
 }
 
-.turno-confirmacion dt {
+.appointment-confirmation dt {
   font-weight: 600;
   color: #555;
 }
 
-.turno-confirmacion dd {
+.appointment-confirmation dd {
   margin: 0;
 }
 
-.turno-form label {
+.appointment-form label {
   display: block;
   margin-bottom: 12px;
   font-size: 0.9rem;
 }
 
-.turno-form input, .turno-form select {
+.appointment-form input, .appointment-form select {
   display: block;
   width: 100%;
   padding: 6px 8px;
@@ -137,12 +137,12 @@ body {
   font-size: 0.95rem;
 }
 
-.turno-form input:focus, .turno-form select:focus {
+.appointment-form input:focus, .appointment-form select:focus {
   outline: 2px solid var(--azul-gobierno);
   outline-offset: 1px;
 }
 
-.turno-form button, .turno-list button, .turno-confirmacion button, .menu-tramites button {
+.appointment-form button, .appointment-list button, .appointment-confirmation button, .services-menu button {
   cursor: pointer;
   padding: 8px 14px;
   border: none;
@@ -152,33 +152,33 @@ body {
   font-size: 0.9rem;
 }
 
-.turno-form button:hover, .turno-list button:hover, .turno-confirmacion button:hover, .menu-tramites button:hover {
+.appointment-form button:hover, .appointment-list button:hover, .appointment-confirmation button:hover, .services-menu button:hover {
   background: var(--azul-oscuro);
 }
 
-.turno-form button:disabled, .turno-list button:disabled {
+.appointment-form button:disabled, .appointment-list button:disabled {
   background: #a8b0c0;
   cursor: not-allowed;
 }
 
-.tramite-fijo {
+.fixed-service {
   font-size: 0.9rem;
   color: #555;
   margin-top: -8px;
   margin-bottom: 16px;
 }
 
-.link-button.volver-al-menu {
+.link-button.back-to-menu {
   display: inline-block;
   color: var(--azul-gobierno);
   margin-bottom: 12px;
 }
 
-.menu-tramites h2 {
+.services-menu h2 {
   color: var(--azul-gobierno);
 }
 
-.menu-tramites ul {
+.services-menu ul {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -187,7 +187,7 @@ body {
   gap: 12px;
 }
 
-.menu-tramite-item {
+.service-menu-item {
   background: white;
   border: 1px solid var(--gris-borde);
   border-radius: 8px;
@@ -199,30 +199,30 @@ body {
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.menu-tramite-item h3 {
+.service-menu-item h3 {
   margin: 0 0 4px;
   color: var(--azul-gobierno);
   font-size: 1.05rem;
 }
 
-.menu-tramite-item p {
+.service-menu-item p {
   margin: 0;
   font-size: 0.9rem;
   color: #555;
 }
 
-.menu-tramite-item button {
+.service-menu-item button {
   flex-shrink: 0;
 }
 
 @media (max-width: 600px) {
-  .menu-tramite-item {
+  .service-menu-item {
     flex-direction: column;
     align-items: flex-start;
   }
 }
 
-.turno-list-header {
+.appointment-list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -230,14 +230,14 @@ body {
   gap: 12px;
 }
 
-.turno-list-filtros {
+.appointment-list-filters {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.turno-list-filtros input,
-.turno-list-filtros select {
+.appointment-list-filters input,
+.appointment-list-filters select {
   padding: 6px 8px;
   border: 1px solid var(--gris-borde);
   border-radius: 4px;
@@ -279,9 +279,9 @@ td {
   color: white;
 }
 
-.badge-pendiente { background: #d97706; }
-.badge-confirmado { background: #16a34a; }
-.badge-cancelado { background: #dc2626; }
+.badge-pending { background: #d97706; }
+.badge-confirmed { background: #16a34a; }
+.badge-cancelled { background: #dc2626; }
 
 .error {
   color: #dc2626;
@@ -304,14 +304,14 @@ td {
     padding: 16px;
   }
 
-  .turno-form, .turno-list, .turno-confirmacion {
+  .appointment-form, .appointment-list, .appointment-confirmation {
     padding: 16px;
   }
 
-  /* Tabla de admin -> tarjetas apiladas. Cada <tr> pasa a ser una tarjeta;
-     cada <td> muestra su etiqueta de columna (via data-label) a la
-     izquierda y el valor a la derecha, en vez de columnas horizontales que
-     no entran en una pantalla angosta. */
+  /* Admin table -> stacked cards. Each <tr> becomes a card; each <td> shows
+     its column label (via data-label) on the left and the value on the
+     right, instead of horizontal columns that don't fit on a narrow
+     screen. */
   table, thead, tbody, th, td, tr {
     display: block;
   }

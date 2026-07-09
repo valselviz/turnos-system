@@ -1,7 +1,3 @@
-// These types mirror the backend DTOs exactly
-// (Turnos.Api/Dtos/AppointmentDtos.cs). If a field changes in the backend,
-// this file is the first place to update.
-
 export type AppointmentStatus = 'Pending' | 'Confirmed' | 'Cancelled'
 
 /** Shape in which the API returns an appointment (AppointmentResponseDto). */
@@ -33,8 +29,6 @@ export interface AppointmentFilters {
 
 /**
  * A slot in a day's time grid (GET /available-slots).
- * startTime arrives as "HH:mm:ss" — that's how System.Text.Json serializes
- * the backend's TimeOnly (see AvailableSlotDto).
  */
 export interface AvailableSlot {
   startTime: string

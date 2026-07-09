@@ -28,7 +28,6 @@ export default function App() {
             >
               {view === 'citizen' ? 'Vista administrador' : 'Volver a vista ciudadano'}
             </button>
-            <span className="gub-badge">gub.uy</span>
           </div>
         </div>
       </header>

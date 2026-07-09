@@ -16,16 +16,10 @@ function todayIso(): string {
   return `${yyyy}-${mm}-${dd}`
 }
 
-// The backend returns "09:00:00" (TimeOnly) for each slot; to display it in
-// the <select> we only take HH:mm.
 function formatSlotTime(startTime: string): string {
   return startTime.slice(0, 5)
 }
 
-// scheduledAt is a wall-clock time, not a universal instant (there's no
-// multiple time zones in play here). That's why we build the string by hand
-// instead of using Date.toISOString(), which would convert to UTC and shift
-// the value by a few hours.
 function buildNaiveDateTime(year: number, month: number, day: number, hour: number, minute: number): string {
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:00`
@@ -41,8 +35,6 @@ export default function AppointmentForm({ serviceType, onCreated }: AppointmentF
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // Availability depends on the date and the service type (each service type
-  // has its own desk) — we recompute it whenever the date changes.
   useEffect(() => {
     if (!date) {
       setSlots([])
@@ -163,7 +155,7 @@ export default function AppointmentForm({ serviceType, onCreated }: AppointmentF
 
       {error && <p className="error">{error}</p>}
 
-      <button type="submit" disabled={loading}>
+      <button type="submit" className="form-submit-button" disabled={loading}>
         {loading ? 'Agendando...' : 'Agendar turno'}
       </button>
     </form>

@@ -9,14 +9,6 @@ type Step =
   | { type: 'form'; serviceType: string }
   | { type: 'confirmation'; appointment: Appointment }
 
-/**
- * Public view. Starts on a services menu (like the gub.uy/tramites listing)
- * — pick one and tap "Agendar" to open the form with that service type
- * already locked in, without having to choose it again from a dropdown. On
- * purpose it doesn't show the full appointment list or how busy other slots
- * are: that's internal management information, not something a citizen
- * needs to see.
- */
 export default function CitizenView() {
   const [step, setStep] = useState<Step>({ type: 'menu' })
 

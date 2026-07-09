@@ -7,12 +7,6 @@ using Turnos.Api.Services;
 
 namespace Turnos.Api.Controllers;
 
-/// <summary>
-/// Controller kept separate from AppointmentsController on purpose: this
-/// doesn't expose or modify appointments, it only answers "what time slots
-/// exist and which are free on a given day?". It's an availability query, not
-/// an appointment resource.
-/// </summary>
 [ApiController]
 [Route("available-slots")]
 public class AvailableSlotsController : ControllerBase
@@ -37,11 +31,6 @@ public class AvailableSlotsController : ControllerBase
         var dayStart = date.ToDateTime(TimeOnly.MinValue);
         var dayEnd = dayStart.AddDays(1);
 
-        // We only care about Confirmed appointments for the SAME service
-        // type: a Pending one doesn't block the slot from showing as
-        // available (same rule already used when creating and confirming
-        // appointments), and a different service type doesn't either — it's
-        // handled by a different desk.
         var confirmedTimes = await _db.Appointments
             .Where(a => a.ScheduledAt >= dayStart
                      && a.ScheduledAt < dayEnd

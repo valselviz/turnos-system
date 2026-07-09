@@ -1,7 +1,4 @@
-// Generic shield-style icon, inspired by the .gub.uy sites' visual style
-// (it's not a reproduction of the National Coat of Arms — it's a simple,
-// original design, meant only to give a "public agency" visual identity).
-export default function ShieldIcon({ size = 32 }: { size?: number }) {
+export default function ShieldIcon({ size = 42 }: { size?: number }) {
   return (
     <svg
       width={size}

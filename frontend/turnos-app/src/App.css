@@ -129,6 +129,7 @@ body {
 .appointment-form input, .appointment-form select {
   display: block;
   width: 100%;
+  height: 38px;
   padding: 6px 8px;
   margin-top: 4px;
   border: 1px solid #c7d0da;
@@ -159,6 +160,11 @@ body {
 .appointment-form button:disabled, .appointment-list button:disabled {
   background: #a8b0c0;
   cursor: not-allowed;
+}
+
+.form-submit-button {
+  height: 42px;
+  width: 100%;
 }
 
 .fixed-service {
@@ -238,6 +244,7 @@ body {
 
 .appointment-list-filters input,
 .appointment-list-filters select {
+  width: 160px;
   padding: 6px 8px;
   border: 1px solid var(--gris-borde);
   border-radius: 4px;

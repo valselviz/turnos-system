@@ -54,7 +54,7 @@ export default function AppointmentList({
         <div className="appointment-list-filters">
           <input
             type="search"
-            placeholder="Buscar por nombre o DNI..."
+            placeholder="Buscar"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
           />

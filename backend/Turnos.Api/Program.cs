@@ -49,4 +49,13 @@ app.UseCors("FrontendPolicy");
 app.UseAuthorization();
 app.MapControllers();
 
+// Aplica migraciones pendientes al arrancar. Necesario en Docker, donde no hay
+// una terminal interactiva para correr "dotnet ef database update" a mano.
+// Es seguro correrlo siempre: si no hay migraciones pendientes, no hace nada.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<TurnosDbContext>();
+    db.Database.Migrate();
+}
+
 app.Run();

@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: turnos_db
+      POSTGRES_USER: turnos
+      POSTGRES_PASSWORD: turnos
+    ports:
+      - "5432:5432"
+    volumes:
+      - turnos_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U turnos -d turnos_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend/Turnos.Api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Pisa la connection string de appsettings.json: acá "db" es el nombre
+      # del servicio de Postgres en esta misma red de Docker, no localhost.
+      ConnectionStrings__TurnosDb: "Host=db;Port=5432;Database=turnos_db;Username=turnos;Password=turnos"
+      Cors__AllowedOrigins__0: "http://localhost:5173"
+      # Development para no perder Swagger dentro del contenedor (útil para
+      # mostrar la API funcionando en la defensa).
+      ASPNETCORE_ENVIRONMENT: "Development"
+    ports:
+      - "5080:8080"
+
+  frontend:
+    build:
+      context: ./frontend/turnos-app
+      args:
+        # Vite "hornea" esto en el bundle en build time; tiene que apuntar al
+        # puerto donde el HOST (tu navegador) va a encontrar al backend, no al
+        # nombre interno "backend" de la red de Docker.
+        VITE_API_URL: "http://localhost:5080"
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  turnos_db_data:

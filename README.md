@@ -75,8 +75,22 @@ npm run dev
 
 La SPA queda en `http://localhost:5173`.
 
+## Correr todo con Docker (alternativa a los pasos 1-3)
+
+Requiere [Docker](https://www.docker.com/) y Docker Compose (viene incluido en Docker Desktop).
+
+```bash
+docker compose up --build
+```
+
+Esto levanta tres servicios: Postgres, el backend (aplica las migraciones pendientes solo al arrancar, no hace falta correr `dotnet ef` a mano) y el frontend servido con nginx. Quedan en los mismos puertos que en desarrollo local: API en `http://localhost:5080` (Swagger incluido) y SPA en `http://localhost:5173`.
+
+Los datos de Postgres quedan en un volumen (`turnos_db_data`), así que sobreviven a un `docker compose down`. Para arrancar de cero: `docker compose down -v`.
+
+Esto no reemplaza los pasos 1-3 — son dos formas independientes de correr el proyecto, usá la que te resulte más cómoda.
+
 ## Notas
 
 - No requiere autenticación (fuera de alcance según el enunciado).
 - Estilos mínimos, sin librería de UI.
-- Sin Docker ni tests automatizados por ahora (mencionados como plus, no como requisito).
+- Sin tests automatizados por ahora (mencionados como plus, no como requisito).

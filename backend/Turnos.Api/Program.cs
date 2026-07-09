@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Turnos.Api.Data;
 using Turnos.Api.Options;
+using Turnos.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,8 @@ builder.Services.AddDbContext<TurnosDbContext>(options =>
 // Configuración del horario laboral (ver Options/HorarioLaboralOptions.cs)
 builder.Services.Configure<HorarioLaboralOptions>(
     builder.Configuration.GetSection(HorarioLaboralOptions.SectionName));
+
+builder.Services.AddSingleton<IHorarioService, HorarioService>();
 
 // CORS: habilitamos el origen del frontend (Vite en localhost:5173 por defecto)
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()

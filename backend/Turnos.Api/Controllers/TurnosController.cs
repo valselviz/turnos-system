@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Turnos.Api.Data;
 using Turnos.Api.Dtos;
 using Turnos.Api.Models;
+using Turnos.Api.Services;
 
 namespace Turnos.Api.Controllers;
 
@@ -11,10 +12,12 @@ namespace Turnos.Api.Controllers;
 public class TurnosController : ControllerBase
 {
     private readonly TurnosDbContext _db;
+    private readonly IHorarioService _horarios;
 
-    public TurnosController(TurnosDbContext db)
+    public TurnosController(TurnosDbContext db, IHorarioService horarios)
     {
         _db = db;
+        _horarios = horarios;
     }
 
     // GET /turnos?estado=Pendiente&fecha=2026-08-01
@@ -58,6 +61,26 @@ public class TurnosController : ControllerBase
         {
             return BadRequest(new ErrorResponseDto(
                 "La fecha y hora del turno debe ser en el futuro."));
+        }
+
+        // Regla: el turno tiene que caer en un slot habilitado (día hábil,
+        // dentro del horario laboral, alineado a la grilla de 15 minutos).
+        if (!_horarios.EsSlotValido(dto.FechaHora))
+        {
+            return BadRequest(new ErrorResponseDto(
+                "El horario elegido no corresponde a un turno habilitado."));
+        }
+
+        // Regla: si ese slot ya tiene un turno Confirmado, ni siquiera dejamos
+        // crear un Pendiente nuevo ahí (evita que alguien agende algo que ya
+        // sabemos que va a fallar al intentar confirmarlo).
+        var slotYaConfirmado = await _db.Turnos.AnyAsync(t =>
+            t.FechaHora == dto.FechaHora && t.Estado == EstadoTurno.Confirmado);
+
+        if (slotYaConfirmado)
+        {
+            return Conflict(new ErrorResponseDto(
+                "Ese horario ya tiene un turno confirmado. Elegí otro."));
         }
 
         var turno = new Turno

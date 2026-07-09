@@ -1,4 +1,4 @@
-import type { Turno, CrearTurnoInput, FiltrosTurnos } from './types'
+import type { Turno, CrearTurnoInput, FiltrosTurnos, HorarioDisponible } from './types'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5080'
 
@@ -43,6 +43,11 @@ export function crearTurno(turno: CrearTurnoInput): Promise<Turno> {
     method: 'POST',
     body: JSON.stringify(turno),
   })
+}
+
+export function listarHorariosDisponibles(fecha: string): Promise<HorarioDisponible[]> {
+  const params = new URLSearchParams({ fecha })
+  return request<HorarioDisponible[]>(`/horarios-disponibles?${params.toString()}`)
 }
 
 export function confirmarTurno(id: number): Promise<Turno> {

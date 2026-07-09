@@ -28,3 +28,13 @@ export interface FiltrosTurnos {
   estado?: string
   fecha?: string // YYYY-MM-DD
 }
+
+/**
+ * Un slot de la grilla horaria de un día (GET /horarios-disponibles).
+ * horaInicio llega como "HH:mm:ss" — así serializa System.Text.Json el
+ * TimeOnly del backend (ver HorarioDisponibleDto).
+ */
+export interface HorarioDisponible {
+  horaInicio: string
+  disponible: boolean
+}

@@ -77,7 +77,7 @@ export default function AppointmentList({
 
       {loading && <p>Cargando...</p>}
 
-      {!loading && appointments.length === 0 && <p>No hay turnos para mostrar.</p>}
+      {!loading && appointments.length === 0 && <p>No hay turnos agendados para mostrar.</p>}
 
       {!loading && appointments.length > 0 && (
         <table>

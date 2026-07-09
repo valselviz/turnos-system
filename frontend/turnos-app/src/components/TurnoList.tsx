@@ -101,17 +101,17 @@ export default function TurnoList({
           <tbody>
             {turnos.map((t) => (
               <tr key={t.id}>
-                <td>{t.nombreCiudadano}</td>
-                <td>{formatearDni(t.dni)}</td>
-                <td>{formatearFecha(t.fechaHora)}</td>
-                <td>{formatearHora(t.fechaHora)}</td>
-                <td>{t.tipoTramite}</td>
-                <td>
+                <td data-label="Ciudadano">{t.nombreCiudadano}</td>
+                <td data-label="DNI">{formatearDni(t.dni)}</td>
+                <td data-label="Fecha">{formatearFecha(t.fechaHora)}</td>
+                <td data-label="Hora">{formatearHora(t.fechaHora)}</td>
+                <td data-label="Trámite">{t.tipoTramite}</td>
+                <td data-label="Estado">
                   <span className={`badge badge-${t.estado.toLowerCase()}`}>
                     {ESTADO_LABEL[t.estado] ?? t.estado}
                   </span>
                 </td>
-                <td className="actions">
+                <td data-label="Acciones" className="actions">
                   <button
                     disabled={t.estado !== 'Pendiente'}
                     onClick={() => handleConfirmar(t.id)}

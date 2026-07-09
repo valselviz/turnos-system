@@ -20,11 +20,13 @@ public class TurnosController : ControllerBase
         _horarios = horarios;
     }
 
-    // GET /turnos?estado=Pendiente&fecha=2026-08-01
+    // GET /turnos?estado=Pendiente&fecha=2026-08-01&tipoTramite=Pasaporte&busqueda=valeria
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TurnoResponseDto>>> Listar(
         [FromQuery] string? estado,
-        [FromQuery] DateOnly? fecha)
+        [FromQuery] DateOnly? fecha,
+        [FromQuery] string? tipoTramite,
+        [FromQuery] string? busqueda)
     {
         var query = _db.Turnos.AsQueryable();
 
@@ -42,6 +44,22 @@ public class TurnosController : ControllerBase
             var desde = fecha.Value.ToDateTime(TimeOnly.MinValue);
             var hasta = desde.AddDays(1);
             query = query.Where(t => t.FechaHora >= desde && t.FechaHora < hasta);
+        }
+
+        if (!string.IsNullOrWhiteSpace(tipoTramite))
+        {
+            query = query.Where(t => t.TipoTramite == tipoTramite);
+        }
+
+        if (!string.IsNullOrWhiteSpace(busqueda))
+        {
+            // ToLower() en ambos lados en vez de EF.Functions.ILike: así el mismo
+            // código funciona igual contra Postgres (producción) y contra el
+            // proveedor InMemory que usan los tests.
+            var termino = busqueda.ToLower();
+            query = query.Where(t =>
+                t.NombreCiudadano.ToLower().Contains(termino) ||
+                t.Dni.ToLower().Contains(termino));
         }
 
         var turnos = await query

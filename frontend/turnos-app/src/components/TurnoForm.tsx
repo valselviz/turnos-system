@@ -3,14 +3,8 @@ import type { FormEvent } from 'react'
 import { crearTurno, listarHorariosDisponibles } from '../api'
 import type { CrearTurnoInput, HorarioDisponible, Turno } from '../types'
 
-const TIPOS_TRAMITE = [
-  'Pasaporte',
-  'Cédula de identidad',
-  'Renovación de documento',
-  'Radicación',
-] as const
-
 interface TurnoFormProps {
+  tipoTramite: string
   onCreated: (turno: Turno) => void
 }
 
@@ -22,8 +16,9 @@ function hoyISO(): string {
   return `${yyyy}-${mm}-${dd}`
 }
 
-// El backend devuelve "09:00:00" (TimeOnly); para mostrar solo tomamos HH:mm.
-function formatearHora(horaInicio: string): string {
+// El backend devuelve "09:00:00" (TimeOnly) para cada slot; para mostrar en
+// el <select> solo tomamos HH:mm.
+function formatearHoraSlot(horaInicio: string): string {
   return horaInicio.slice(0, 5)
 }
 
@@ -35,10 +30,9 @@ function formatearFechaHoraNaive(anio: number, mes: number, dia: number, hora: n
   return `${anio}-${pad(mes)}-${pad(dia)}T${pad(hora)}:${pad(minuto)}:00`
 }
 
-export default function TurnoForm({ onCreated }: TurnoFormProps) {
+export default function TurnoForm({ tipoTramite, onCreated }: TurnoFormProps) {
   const [nombreCiudadano, setNombreCiudadano] = useState('')
   const [dni, setDni] = useState('')
-  const [tipoTramite, setTipoTramite] = useState<string>(TIPOS_TRAMITE[0])
   const [fecha, setFecha] = useState('')
   const [horaSeleccionada, setHoraSeleccionada] = useState('')
   const [horarios, setHorarios] = useState<HorarioDisponible[]>([])
@@ -46,9 +40,8 @@ export default function TurnoForm({ onCreated }: TurnoFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // La disponibilidad depende de la fecha Y del trámite (cada trámite tiene
-  // su propia ventanilla) — recalculamos cada vez que cambia cualquiera de
-  // los dos, e invalidamos el horario elegido previamente.
+  // La disponibilidad depende de la fecha y del trámite (cada trámite tiene
+  // su propia ventanilla) — recalculamos cada vez que cambia la fecha.
   useEffect(() => {
     if (!fecha) {
       setHorarios([])
@@ -97,12 +90,6 @@ export default function TurnoForm({ onCreated }: TurnoFormProps) {
       }
 
       const turno = await crearTurno(payload)
-
-      setNombreCiudadano('')
-      setDni('')
-      setTipoTramite(TIPOS_TRAMITE[0])
-      setFecha('')
-      setHoraSeleccionada('')
       onCreated(turno)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido')
@@ -114,6 +101,10 @@ export default function TurnoForm({ onCreated }: TurnoFormProps) {
   return (
     <form className="turno-form" onSubmit={handleSubmit}>
       <h2>Nuevo turno</h2>
+
+      <p className="tramite-fijo">
+        Trámite: <strong>{tipoTramite}</strong>
+      </p>
 
       <label>
         Nombre del ciudadano
@@ -127,15 +118,6 @@ export default function TurnoForm({ onCreated }: TurnoFormProps) {
       <label>
         DNI
         <input value={dni} onChange={(e) => setDni(e.target.value)} required />
-      </label>
-
-      <label>
-        Tipo de trámite
-        <select value={tipoTramite} onChange={(e) => setTipoTramite(e.target.value)}>
-          {TIPOS_TRAMITE.map((tipo) => (
-            <option key={tipo} value={tipo}>{tipo}</option>
-          ))}
-        </select>
       </label>
 
       <label>
@@ -164,7 +146,7 @@ export default function TurnoForm({ onCreated }: TurnoFormProps) {
             .filter((h) => h.disponible)
             .map((h) => (
               <option key={h.horaInicio} value={h.horaInicio}>
-                {formatearHora(h.horaInicio)}
+                {formatearHoraSlot(h.horaInicio)}
               </option>
             ))}
         </select>

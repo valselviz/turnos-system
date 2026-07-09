@@ -18,7 +18,7 @@ export default function EscudoIcono({ size = 32 }: { size?: number }) {
         d="M16 4.3 L26 7.6 V15 C26 21 21.8 25.3 16 27.8 C10.2 25.3 6 21 6 15 V7.6 Z"
         fill="#0a3d62"
       />
-      <path d="M16 9 L20.5 21 L16 18 L11.5 21 Z" fill="#f2b705" />
+      <path d="M16 9 L20.5 21 L16 18 L11.5 21 Z" fill="#ffffff" />
     </svg>
   )
 }

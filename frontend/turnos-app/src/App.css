@@ -1,8 +1,8 @@
 :root {
   --azul-gobierno: #0a3d62;
   --azul-oscuro: #06283d;
-  --dorado: #f2b705;
-  --gris-fondo: #f4f5f7;
+  --gris-fondo: #fafbfc;
+  --gris-borde: #e5e8ec;
   --texto: #1f2430;
 }
 
@@ -91,7 +91,7 @@ body {
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  border-top: 3px solid var(--dorado);
+  border: 1px solid var(--gris-borde);
 }
 
 .turno-form, .turno-confirmacion {
@@ -142,7 +142,7 @@ body {
   outline-offset: 1px;
 }
 
-.turno-form button, .turno-list button, .turno-confirmacion button {
+.turno-form button, .turno-list button, .turno-confirmacion button, .menu-tramites button {
   cursor: pointer;
   padding: 8px 14px;
   border: none;
@@ -152,7 +152,7 @@ body {
   font-size: 0.9rem;
 }
 
-.turno-form button:hover, .turno-list button:hover, .turno-confirmacion button:hover {
+.turno-form button:hover, .turno-list button:hover, .turno-confirmacion button:hover, .menu-tramites button:hover {
   background: var(--azul-oscuro);
 }
 
@@ -161,10 +161,88 @@ body {
   cursor: not-allowed;
 }
 
+.tramite-fijo {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+
+.link-button.volver-al-menu {
+  display: inline-block;
+  color: var(--azul-gobierno);
+  margin-bottom: 12px;
+}
+
+.menu-tramites h2 {
+  color: var(--azul-gobierno);
+}
+
+.menu-tramites ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menu-tramite-item {
+  background: white;
+  border: 1px solid var(--gris-borde);
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.menu-tramite-item h3 {
+  margin: 0 0 4px;
+  color: var(--azul-gobierno);
+  font-size: 1.05rem;
+}
+
+.menu-tramite-item p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.menu-tramite-item button {
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .menu-tramite-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 .turno-list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.turno-list-filtros {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.turno-list-filtros input,
+.turno-list-filtros select {
+  padding: 6px 8px;
+  border: 1px solid var(--gris-borde);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.85rem;
 }
 
 table {

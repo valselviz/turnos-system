@@ -1,4 +1,6 @@
 import { confirmarTurno, cancelarTurno } from '../api'
+import { formatearFecha, formatearHora, formatearDni } from '../formato'
+import { TIPOS_TRAMITE } from '../tramites'
 import type { Turno, EstadoTurno } from '../types'
 
 const ESTADO_LABEL: Record<EstadoTurno, string> = {
@@ -9,16 +11,26 @@ const ESTADO_LABEL: Record<EstadoTurno, string> = {
 
 interface TurnoListProps {
   turnos: Turno[]
+  loading: boolean
   filtroEstado: string
-  onFiltroChange: (estado: string) => void
+  onFiltroEstadoChange: (estado: string) => void
+  filtroTipoTramite: string
+  onFiltroTipoTramiteChange: (tipoTramite: string) => void
+  busqueda: string
+  onBusquedaChange: (busqueda: string) => void
   onChanged: () => void
   onError: (message: string) => void
 }
 
 export default function TurnoList({
   turnos,
+  loading,
   filtroEstado,
-  onFiltroChange,
+  onFiltroEstadoChange,
+  filtroTipoTramite,
+  onFiltroTipoTramiteChange,
+  busqueda,
+  onBusquedaChange,
   onChanged,
   onError,
 }: TurnoListProps) {
@@ -44,23 +56,43 @@ export default function TurnoList({
     <div className="turno-list">
       <div className="turno-list-header">
         <h2>Turnos</h2>
-        <select value={filtroEstado} onChange={(e) => onFiltroChange(e.target.value)}>
-          <option value="">Todos los estados</option>
-          <option value="Pendiente">Pendiente</option>
-          <option value="Confirmado">Confirmado</option>
-          <option value="Cancelado">Cancelado</option>
-        </select>
+
+        <div className="turno-list-filtros">
+          <input
+            type="search"
+            placeholder="Buscar por nombre o DNI..."
+            value={busqueda}
+            onChange={(e) => onBusquedaChange(e.target.value)}
+          />
+
+          <select value={filtroTipoTramite} onChange={(e) => onFiltroTipoTramiteChange(e.target.value)}>
+            <option value="">Todos los trámites</option>
+            {TIPOS_TRAMITE.map((tipo) => (
+              <option key={tipo} value={tipo}>{tipo}</option>
+            ))}
+          </select>
+
+          <select value={filtroEstado} onChange={(e) => onFiltroEstadoChange(e.target.value)}>
+            <option value="">Todos los estados</option>
+            <option value="Pendiente">Pendiente</option>
+            <option value="Confirmado">Confirmado</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
+        </div>
       </div>
 
-      {turnos.length === 0 && <p>No hay turnos para mostrar.</p>}
+      {loading && <p>Cargando...</p>}
 
-      {turnos.length > 0 && (
+      {!loading && turnos.length === 0 && <p>No hay turnos para mostrar.</p>}
+
+      {!loading && turnos.length > 0 && (
         <table>
           <thead>
             <tr>
               <th>Ciudadano</th>
               <th>DNI</th>
-              <th>Fecha y hora</th>
+              <th>Fecha</th>
+              <th>Hora</th>
               <th>Trámite</th>
               <th>Estado</th>
               <th>Acciones</th>
@@ -70,8 +102,9 @@ export default function TurnoList({
             {turnos.map((t) => (
               <tr key={t.id}>
                 <td>{t.nombreCiudadano}</td>
-                <td>{t.dni}</td>
-                <td>{new Date(t.fechaHora).toLocaleString()}</td>
+                <td>{formatearDni(t.dni)}</td>
+                <td>{formatearFecha(t.fechaHora)}</td>
+                <td>{formatearHora(t.fechaHora)}</td>
                 <td>{t.tipoTramite}</td>
                 <td>
                   <span className={`badge badge-${t.estado.toLowerCase()}`}>

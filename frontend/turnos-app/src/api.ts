@@ -34,6 +34,8 @@ export function listarTurnos(filtros: FiltrosTurnos = {}): Promise<Turno[]> {
   const params = new URLSearchParams()
   if (filtros.estado) params.set('estado', filtros.estado)
   if (filtros.fecha) params.set('fecha', filtros.fecha)
+  if (filtros.tipoTramite) params.set('tipoTramite', filtros.tipoTramite)
+  if (filtros.busqueda) params.set('busqueda', filtros.busqueda)
   const query = params.toString() ? `?${params.toString()}` : ''
   return request<Turno[]>(`/turnos${query}`)
 }

@@ -27,6 +27,8 @@ export interface CrearTurnoInput {
 export interface FiltrosTurnos {
   estado?: string
   fecha?: string // YYYY-MM-DD
+  tipoTramite?: string
+  busqueda?: string // nombre o DNI, coincidencia parcial
 }
 
 /**

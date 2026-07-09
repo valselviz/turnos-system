@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Turnos.Api.Data;
+using Turnos.Api.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,10 @@ var connectionString = builder.Configuration.GetConnectionString("TurnosDb")
 
 builder.Services.AddDbContext<TurnosDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+// Configuración del horario laboral (ver Options/HorarioLaboralOptions.cs)
+builder.Services.Configure<HorarioLaboralOptions>(
+    builder.Configuration.GetSection(HorarioLaboralOptions.SectionName));
 
 // CORS: habilitamos el origen del frontend (Vite en localhost:5173 por defecto)
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()

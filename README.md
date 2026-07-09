@@ -89,8 +89,16 @@ Los datos de Postgres quedan en un volumen (`turnos_db_data`), así que sobreviv
 
 Esto no reemplaza los pasos 1-3 — son dos formas independientes de correr el proyecto, usá la que te resulte más cómoda.
 
+## Tests
+
+```bash
+cd backend/Turnos.Api.Tests
+dotnet test
+```
+
+Cubren las cuatro reglas de negocio: `HorarioServiceTests` prueba la grilla de slots de forma aislada (sin base de datos), y `TurnosControllerTests` prueba los endpoints usando una base de datos en memoria (EF Core InMemory), sin tocar Postgres real.
+
 ## Notas
 
 - No requiere autenticación (fuera de alcance según el enunciado).
 - Estilos mínimos, sin librería de UI.
-- Sin tests automatizados por ahora (mencionados como plus, no como requisito).
